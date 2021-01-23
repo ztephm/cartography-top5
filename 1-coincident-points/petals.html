@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Coincident Points | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="https://libs.cartocdn.com/carto.js/v4.1.5/carto.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:600" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="https://carto.com/developers/carto-js/examples/maps/public/style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <!-- legend -->
+    <aside class="toolbox">
+      <div class="box legend">
+        <h3 class="h3">Norfolk Cares Call Center <br>May - June 2018 Calls</h3>
+        <p class="description open-sans"><b>Calls Per Location</b></p>
+        <ul class="category open-sans">
+          <li id="capital"><div class="circle circle-outline" style="width:8px; height:8px; background-color:#e15383;"></div>One</li>
+          <li id="capital">
+            <img src="https://s3.amazonaws.com/com.cartodb.users-assets.production/production/stephaniemongon/assets/20181004224808pin-pink.svg" alt="Pin" height="12" width="8">
+            &nbsp;&nbsp; One of Two Calls
+          </li>
+          <li id="capital">
+            <img src="https://s3.amazonaws.com/com.cartodb.users-assets.production/production/stephaniemongon/assets/20181004224747pin-lto.svg" alt="Pin" height="12" width="8">
+            &nbsp;&nbsp; One of Three Calls
+          </li>
+          <li id="capital">
+            <img src="https://s3.amazonaws.com/com.cartodb.users-assets.production/production/stephaniemongon/assets/20181004224824pin-y.svg" alt="Pin" height="12" width="8">
+            &nbsp;&nbsp; One of Four Calls
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <script>
+      // Based on Mamata Akella's Petal Plots: https://gist.github.com/makella/0c3470c0d0b58119577627d72b57b0f9
+      
+      const map = L.map('map').setView([36.84235555011266, -76.28588542342187], 15);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        username: 'stephaniemongon',
+        apiKey: 'default_public'
+      });
+
+      const source = new carto.source.Dataset('nccc_may2018_petals_copy');
+      const style = new carto.style.CartoCSS(`
+        @wdth: 5;
+
+        #layer {
+            marker-width: @wdth - 2;
+            marker-fill: #e15383;
+            marker-fill-opacity: 0.9;
+            marker-allow-overlap: true;
+            marker-line-width: 1;
+            marker-line-color: #131313;
+            marker-line-opacity: 0;
+
+            [dupe_count = 2]{
+              marker-fill: #f67b77;
+            }
+            [dupe_count = 3]{
+              marker-fill: #ffa679;
+            }
+            [dupe_count = 4]{
+              marker-fill: #ffd08e;
+            }
+
+            [zoom > 11]{
+              marker-width: @wdth - 1;
+              marker-line-opacity: 1;
+
+              [dupe_count = 2]{
+                marker-width: @wdth - .5;
+              }
+              [dupe_count = 3]{
+                marker-width: @wdth;
+              }
+              [dupe_count = 4]{
+                marker-width: @wdth + .5;
+              }
+            }
+
+            [zoom = 14]{
+              marker-width: @wdth;
+
+              [dupe_count > 1]{
+                marker-width: @wdth + 2;
+                
+                marker-file: url('https://s3.amazonaws.com/com.cartodb.users-assets.production/production/stephaniemongon/assets/20181004224808pin-pink.svg');
+                marker-transform: rotate([degrees]),translate(0,-5.5);
+
+                // correct the visual offset
+                [degrees = 90]{
+                    marker-transform: rotate([degrees]),translate(0,-5);
+                }
+                [degrees = 180]{
+                    marker-transform: rotate([degrees]),translate(.5,-4.7);
+                }
+                [degrees = 270]{
+                    marker-transform: rotate([degrees]),translate(0,-5);
+                }
+              }
+            }
+
+            [zoom >= 15]{
+              marker-width: @wdth + 2;
+              
+              [dupe_count > 1]{ 
+                marker-width: @wdth + 4; 
+                marker-file: url('https://s3.amazonaws.com/com.cartodb.users-assets.production/production/stephaniemongon/assets/20181004224808pin-pink.svg');
+                marker-transform: rotate([degrees]),translate(0,-10.5);
+
+                [degrees = 90]{
+                    marker-transform: rotate([degrees]),translate(0,-10);
+                }
+                [degrees = 180]{
+                    marker-transform: rotate([degrees]),translate(.5,-9.7);
+                }
+                [degrees = 270]{
+                    marker-transform: rotate([degrees]),translate(0,-10);
+                }
+              }
+            }
+        }
+      `);
+      const layer = new carto.layer.Layer(source, style);
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+    </script>
+  </body>
+</html>  

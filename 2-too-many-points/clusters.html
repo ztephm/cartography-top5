@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Cluster | CARTO VL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <!-- Include CARTO VL JS from the CARTO CDN-->
+  <script src="https://libs.cartocdn.com/carto-vl/v1.0.0/carto-vl.min.js"></script>
+  <!-- Include Mapbox GL from the Mapbox CDN-->
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js"></script>
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css" rel="stylesheet" />
+  <!-- Include CARTO styles-->
+  <link href="https://carto.com/developers/carto-vl/examples/maps/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="map"></div>
+  <!-- legend -->
+  <aside class="toolbox">
+    <div class="box legend">
+      <h3 class="h3">Norfolk Cares Call Center <br>May - June 2018 Calls</h3>
+      <p class="description open-sans"><b>CALLS PER LOCATION</b></p>
+      <ul>
+        <li class="Legend-categoryListItem u-flex u-alignCenter" style="margin-bottom: 5px; margin-top: 10px;">
+          <img src="https://s3.amazonaws.com/com.cartodb.users-assets.production/production/stephaniemongon/assets/20181004213951Screen%20Shot%202018-10-04%20at%205.38.52%20PM.png" alt="gradient legend">
+        </li>
+      </ul>
+    </div>
+  </aside>
+  <div id="loader">
+    <div class="CDB-LoaderIcon CDB-LoaderIcon--big">
+      <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">
+        <circle class="CDB-LoaderIcon-path" cx="25" cy="25" r="20" fill="none"></circle>
+      </svg>
+    </div>
+  </div>
+  <script>
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      center: [-76.2764157, 36.862113],
+      zoom: 13,
+      scrollZoom: true,
+      dragRotate: false,
+      touchZoomRotate: false,
+    });
+
+    const nav = new mapboxgl.NavigationControl({
+      showCompass: false
+    });
+    map.addControl(nav, 'top-left');
+
+    // Define user
+    carto.setDefaultAuth({
+      user: 'stephaniemongon',
+      apiKey: 'default_public'
+    });
+    
+    const source = new carto.source.Dataset('nccc_may2018');
+
+    const viz = new carto.Viz(`
+      width: blend(sqrt(clusterSum($call_count)), clusterSum($call_count) * 3, linear(zoom(), 10, 14))
+      color: ramp(buckets(clusterSum($call_count), [1, 2, 3, 4]), [#e15383, #f67b77, #ffa679, #ffd08e, #fef6b5])
+      strokeWidth: 0.5
+      strokeColor: #191970
+      resolution: 4
+    `);
+
+    const layer = new carto.Layer('layer', source, viz);
+
+    layer.addTo(map, 'watername_ocean');
+    layer.on('loaded', hideLoader);
+
+    function hideLoader() {
+      document.getElementById('loader').style.opacity = '0';
+    }
+  </script>
+</body>
+
+</html>
