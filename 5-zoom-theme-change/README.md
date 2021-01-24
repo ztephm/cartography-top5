@@ -11,6 +11,6 @@ Use different types of thematic cartography in the same map. Take advantage of [
 
 Code [here](https://github.com/ztephm/cartography-top5/blob/main/5-zoom-theme-change/dots-to-bins.html).
 
-<img src="../img/zoom_styles_2.png" alt="Dot density map" />
+<img src="../img/zoom_styles_ddensity.png" alt="Dot density map" />
 
-<img src="../img/zoom_styles_3.png" alt="Proportional symbol map" />
+<img src="../img/zoom_styles_psymbol.png" alt="Proportional symbol map" />
