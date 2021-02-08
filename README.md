@@ -1,5 +1,5 @@
 # cartography-top5
-CARTO Support's top 5 solutions to common cartography problems
+CARTO Support's top 5 solutions to common cartography problems:
 
 1.  [How can I style coincident points?](https://github.com/ztephm/cartography-top5/blob/main/1-coincident-points/README.md)
 2.  [How can I style overlapping points?](https://github.com/ztephm/cartography-top5/blob/main/2-too-many-points/README.md)
