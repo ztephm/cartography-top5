@@ -100,12 +100,12 @@
 
     // Define user
     carto.setDefaultAuth({
-      user: 'stephaniemongon',
+      user: 'ztephm',
       apiKey: 'default_public'
     });
 
     // Define layer
-    const source = new carto.source.Dataset('norfolk_cares_cc');
+    const source = new carto.source.SQL('SELECT cartodb_id, the_geom_webmercator, request_category FROM norfolk_cares_cc');
 
     // Define style
     const viz = new carto.Viz(`      
